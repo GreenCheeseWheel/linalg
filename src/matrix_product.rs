@@ -1,6 +1,6 @@
 use crate::Matrix;
 
-pub fn dot_product(vec1:Vec<f64>, vec2:Vec<f64>) -> Result<f64, &'static str>
+pub fn dot_product(vec1:&Vec<f64>, vec2:&Vec<f64>) -> Result<f64, &'static str>
 {
     if vec1.len() != vec2.len()
     {
@@ -46,7 +46,7 @@ pub fn matrix_product(mat1:&Matrix, mat2:&Matrix) -> Result<Matrix, &'static str
                 col.push(mat2.data[j + k*mat2.cols]);
             }
 
-            match dot_product(row, col) {
+            match dot_product(&row, &col) {
                 Ok(res) => mat[i*mat2.cols + j] = res,
                 Err(msg) => return Err(msg)
             }

@@ -1,5 +1,9 @@
 pub mod file_reader;
 pub mod matrix_product;
+use std::ops;
+
+use matrix_product::matrix_product;
+
 
 pub struct Matrix
 {
@@ -89,10 +93,20 @@ impl Matrix {
     */
 
     // SHOULD RETURN A MATRIX
-    pub fn pow(n:u32)
+    pub fn pow(&self, n:u32) -> Result<Matrix, &str>
     {
+        let mut res = Matrix::new(self.rows, self.cols);
+        res.set_data(self.data.clone());
 
-        
+        for _ in 1..n
+        {
+            match matrix_product::matrix_product(self, &res) {
+                Ok(mat) => res = mat,
+                Err(msg) => return Err(msg)
+            }     
+        }
+       
+        Ok(res)
     }
 
     pub fn det(&self) -> Result<f64, &str>
@@ -151,4 +165,13 @@ impl Matrix {
         }
     }
 
+}
+
+impl ops::Mul<Matrix> for Matrix
+{
+    type Output = Result<Matrix, &'static str>;
+
+    fn mul(self, rhs: Matrix) -> Result<Matrix, &'static str> {
+        matrix_product(&self, &rhs)
+    }
 }
