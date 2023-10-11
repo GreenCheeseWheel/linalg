@@ -1,6 +1,6 @@
 pub mod file_reader;
 pub mod matrix_product;
-use std::ops;
+use std::{ops, fmt::Display, fmt::Formatter};
 
 use matrix_product::matrix_product;
 
@@ -92,7 +92,7 @@ impl Matrix {
     }
     */
 
-    // SHOULD RETURN A MATRIX
+  
     pub fn pow(&self, n:u32) -> Result<Matrix, &str>
     {
         let mut res = Matrix::new(self.rows, self.cols);
@@ -167,11 +167,103 @@ impl Matrix {
 
 }
 
-impl ops::Mul<Matrix> for Matrix
+//////
+//
+// DISPLAY IMPLEMENTATIONS HERE
+//
+//////
+
+impl Display for Matrix
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        
+        for i in 0..self.rows
+        {
+            if let Err(msg) = write!(f, "\n R{} <-> ", i+1)
+            {
+                return  Err(msg);
+            }
+
+            for j in 0..self.cols
+            {
+                if let Err(msg) = write!(f, " {} ", self.data[i*self.cols + j])
+                {
+                    return Err(msg);
+                }
+            }
+
+            if let Err(msg) = write!(f, "\n")
+            {
+                return Err(msg);
+            }
+        }
+
+        writeln!(f, "\n")
+    }
+}
+
+
+//////
+//
+// CLONE AND COPY IMPLEMENTATIONS HERE
+//
+//////
+
+impl Clone for Matrix
+{
+    fn clone(&self) -> Self {
+        Matrix {
+            rows: self.rows,
+            cols: self.cols,
+            data: self.data.clone()
+        }
+    }
+}
+
+
+//////
+//
+// ARITHMETIC IMPLEMENTATIONS HERE
+//
+//////
+
+
+impl ops::Mul<&Matrix> for &Matrix
 {
     type Output = Result<Matrix, &'static str>;
 
-    fn mul(self, rhs: Matrix) -> Result<Matrix, &'static str> {
-        matrix_product(&self, &rhs)
+    fn mul(self, rhs: &Matrix) -> Result<Matrix, &'static str> {
+        matrix_product(self, rhs)
     }
+}
+
+impl ops::Add<&Matrix> for &Matrix {
+    type Output = Result<Matrix, &'static str>;
+
+    fn add(self, rhs: &Matrix) -> Result<Matrix, &'static str> {
+        
+        if self.rows != rhs.rows || self.cols != rhs.cols
+        {
+            return Err("Matrices must have matching dimensions");
+        }
+
+        let mut mat = Matrix {
+            rows: self.rows,
+            cols: self.cols,
+            data: self.data.clone(),
+        };
+
+        for i in 0..self.rows
+        {
+            for j in 0..self.cols
+            {
+                mat.data[i*self.cols + j] = self.data[i*self.cols + j] + rhs.data[i*self.cols + j];
+            }
+        }
+
+        Ok(
+            mat
+        )
+    }
+
 }
