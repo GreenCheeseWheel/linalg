@@ -165,7 +165,30 @@ impl Matrix {
         }
     }
 
+    pub fn transpose(&mut self)
+    {
+        let mut mat = Matrix::new(self.cols, self.rows);
+
+        for i in 0..self.rows
+        {
+            for j in 0..self.cols
+            {
+                mat.data[j*self.rows + i] = self.data[i*self.cols + j];
+            }
+        }        
+
+        let old_rows = self.rows;
+        self.rows = self.cols;
+        self.cols = old_rows;
+        self.data = mat.data;
+
+
+    }
+
+
 }
+
+
 
 //////
 //
@@ -238,13 +261,13 @@ impl ops::Mul<&Matrix> for &Matrix
 }
 
 impl ops::Add<&Matrix> for &Matrix {
-    type Output = Result<Matrix, &'static str>;
+    type Output = Matrix;
 
-    fn add(self, rhs: &Matrix) -> Result<Matrix, &'static str> {
+    fn add(self, rhs: &Matrix) -> Matrix{
         
         if self.rows != rhs.rows || self.cols != rhs.cols
         {
-            return Err("Matrices must have matching dimensions");
+            panic!("Matrices must have matching dimensions");
         }
 
         let mut mat = Matrix {
@@ -261,9 +284,9 @@ impl ops::Add<&Matrix> for &Matrix {
             }
         }
 
-        Ok(
-            mat
-        )
+        
+        mat
+        
     }
 
 }

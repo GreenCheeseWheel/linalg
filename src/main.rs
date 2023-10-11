@@ -1,19 +1,12 @@
 use linalg::{Matrix, matrix_product};
 
 fn main() {
-    let mut mat = Matrix::new(3, 3);
-    let mut mat2 = Matrix::new(3, 3);
+    let mut mat = Matrix::new(2, 4);
     
     mat.read_csv("./matrix.csv");
-    mat2.read_csv("./matrix.csv");
+  
 
-    if let Ok(mat) = &mat * &mat2
-    {
-        println!("MATRIZ ES: {}", mat);
-    }
-
-    println!("PRIMERA MATRIZ \n {}", mat);
-    /*
+    /* 
         TODO:
 
         IMPLEMENT DIAGONALIZATION IN THESE STEPS:
