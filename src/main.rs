@@ -12,8 +12,8 @@ fn main() {
 
     if let Ok(mut nice) = mat {
         println!("{}", nice);
-        nice.add_row(2, 1, 1.0);
-        println!("{}", nice);
+        nice.add_row(2, 3, 4.5);
+        println!("{}",  2.0*&nice );
         
     }
 

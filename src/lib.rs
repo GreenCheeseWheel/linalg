@@ -306,11 +306,46 @@ impl Clone for Matrix
 //////
 
 
+impl ops::Mul<f64> for &Matrix
+{
+    type Output = Matrix;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        let mut mat = self.clone();
+
+        for i in 0..self.data.len()
+        {
+            mat.data[i] *= rhs;
+        }
+        
+        mat
+    }
+}
+
+impl ops::Mul<&Matrix> for f64
+{
+    type Output = Matrix;
+
+    fn mul(self, rhs: &Matrix) -> Self::Output {
+        let mut mat = rhs.clone();
+
+        for i in 0..rhs.data.len()
+        {
+            mat.data[i] *= self;
+        }
+        
+        mat
+    }
+}
+
+
+
+
 impl ops::Mul<&Matrix> for &Matrix
 {
     type Output = Result<Matrix, &'static str>;
 
-    fn mul(self, rhs: &Matrix) -> Result<Matrix, &'static str> {
+    fn mul(self, rhs: &Matrix) -> Self::Output {
         matrix_product(self, rhs)
     }
 }
@@ -318,7 +353,7 @@ impl ops::Mul<&Matrix> for &Matrix
 impl ops::Add<&Matrix> for &Matrix {
     type Output = Matrix;
 
-    fn add(self, rhs: &Matrix) -> Matrix{
+    fn add(self, rhs: &Matrix) -> Self::Output{
         
         if self.rows != rhs.rows || self.cols != rhs.cols
         {
