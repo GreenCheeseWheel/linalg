@@ -54,6 +54,29 @@ impl Matrix {
         true
     }
 
+    pub fn swap_rows(&mut self, r1:usize, r2:usize) -> bool
+    {
+        if r1 > self.rows || r2 > self.rows
+        {
+            return false;
+        }
+
+        for i in 0..self.cols
+        {
+            let stored = self.data[(r1-1)*self.cols + i];
+            
+            self.data[(r1-1)*self.cols + i] = self.data[(r2-1)*self.cols + i];
+            
+            self.data[(r2-1)*self.cols + i] = stored;   
+        }
+
+
+        
+
+
+        return true;
+
+    }
 
   
     pub fn get_echelon(&self) -> Result<Matrix, &str>

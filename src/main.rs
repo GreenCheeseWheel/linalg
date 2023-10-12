@@ -1,15 +1,25 @@
 use std::time::SystemTime;
+use std::env;
 use linalg::Matrix;
 
 fn main() {
-    let mat = Matrix::from("./iris.csv");
+    let file_path:Vec<String> = env::args().collect();
+    
+    let file_path = file_path.get(1).expect("You must provide a file path!");
 
-    if let Ok(nice) = mat {
-        println!("{}", nice.get_echelon().unwrap());
+    let mat = Matrix::from(file_path);
+
+    if let Ok(mut nice) = mat {
+        nice.swap_rows(3, 6);
+        println!("NICE SWAPPED: {}", nice);
     }
 
     /* 
         TODO:
+        IMPLEMENT BASIC MATRIX OPERATIONS (SWAP ROWS TO BE IMPLEMENTED FIRST)
+
+        MAKE getEchelon FUNCTION USE OPTIMIZED PIVOTS
+
         CHANGE MATRIX TRANSPOSITION TO BE IN-PLACE
 
         IMPLEMENT DIAGONALIZATION IN THESE STEPS:
