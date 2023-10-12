@@ -156,43 +156,21 @@ impl Matrix {
 
         let n = self.rows;
         let mut result = 1.0;
-        let mut mat = self.data.clone();
-
-        // GAUSS-JORDAN
-        for k in 0..n {
-
-            // PIVOT ELEMENT
-            let pivot = mat[k*n + k];
-
-            if pivot == 0.0
-            {
-                return Err("Matrix has lin. dependent rows");
-            }
-
-            // HERE WE GO THROUGH THE ELEMENTS BELOW THE PIVOT
-            for i in k+1..n
-            {
-                let factor = mat[i*n + k] / pivot;
-
-                // WE SET THE MULTIPLICATIVE FACTOR NEEDED TO MAKE THIS ELEMENT 0
-                // AND UPDATE THE ROW AS IF WE HAD DONE AN OPERATION OF TYPE
-                // ROW = ROW + x * OTHER_ROW
-                for j in k..n
-                {
-                    mat[i*n + j] = mat[i*n + j] -factor*mat[k*n + j];
-                }
-            }
         
-        }
-
-        // WE CALCULATE THE DETERMINANT USING THE 
-        // DIAGONAL OF THIS UPPER-TRIANGULAR EQUIVALENT MATRIX
-        for k in 0..n
+        if let Ok(matrix) = self.get_echelon()
         {
-            result *= mat[k*n + k];
-        }
+            // WE CALCULATE THE DETERMINANT USING THE 
+            // DIAGONAL OF THIS UPPER-TRIANGULAR EQUIVALENT MATRIX
+            for k in 0..n
+            {
+                result *= matrix.data[k*n + k];
+            }
 
-        Ok(result)
+            return Ok(result);
+        }
+     
+        Ok(0.0)
+        
     }
 
     pub fn read_csv(&mut self, file_path:&str) -> Result<bool, String>

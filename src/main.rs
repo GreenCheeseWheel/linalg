@@ -11,18 +11,12 @@ fn main() {
 
 
     if let Ok(mut nice) = mat {
-        nice.swap_rows(3, 6);
-        println!("NICE SWAPPED: {}", nice);
+        println!("{}", nice.det().unwrap()); 
     }
 
     /* 
         TODO:
-        IMPLEMENT BASIC MATRIX OPERATIONS (SCALAR MULTIPLICATION TO BE IMPLEMENTED, THEN ROW ADDITION)
-
-        MAKE getEchelon FUNCTION USE OPTIMIZED PIVOTS
-
-        CHANGE MATRIX TRANSPOSITION TO BE IN-PLACE
-
+       
         IMPLEMENT DIAGONALIZATION IN THESE STEPS:
             1) Find the characteristic polynomial
             2) Find the roots of the polynomial

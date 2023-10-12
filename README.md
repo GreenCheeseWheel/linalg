@@ -21,6 +21,7 @@ Right now it's main features are:
 There is still a lot left to do, but my main priorities are:
 - Implementing basic row operations (Scalar multiplication and row addition)
 - Optimizing matrix multiplication and determinant calculations
+- Implementing partial pivoting to reduce rounding errors
 - Starting work on diagonalization (That is, calculating eigenvectors and eigenvalues)
 
 ### Where to find documentation
