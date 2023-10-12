@@ -74,6 +74,36 @@ impl Matrix {
 
     }
 
+    pub fn mult_row(&mut self, row:usize, scalar:f64) -> bool
+    {
+        if row > self.rows || scalar == 0.0
+        {
+            return false;
+        }
+
+        for i in 0..self.cols
+        {
+            self.data[(row-1)*self.cols + i] *= scalar;
+        }
+
+        true
+    }
+
+    pub fn add_row(&mut self, target:usize, row:usize, scalar:f64) -> bool
+    {
+        if target > self.rows || row > self.rows
+        {
+            return false;
+        }
+
+        for i in 0..self.cols
+        {
+            self.data[(target-1)*self.cols + i] += scalar*self.data[(row-1)*self.cols + i];
+        }
+
+        true
+    }
+
   
     pub fn get_echelon(&self) -> Result<Matrix, &str>
     {

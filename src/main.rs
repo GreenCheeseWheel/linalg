@@ -11,7 +11,10 @@ fn main() {
 
 
     if let Ok(mut nice) = mat {
-        println!("{}", nice.det().unwrap()); 
+        println!("{}", nice);
+        nice.add_row(2, 1, 1.0);
+        println!("{}", nice);
+        
     }
 
     /* 
