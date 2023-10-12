@@ -1,18 +1,12 @@
 use std::process;
+use std::time::SystemTime;
 use linalg::Matrix;
 
 fn main() {
-    let mut mat = Matrix::new(2, 7);
+    let mat = Matrix::from("./iris.csv").unwrap();
     
-    if let Err(msg) = mat.read_csv("./matrix.csv")
-    {
-        println!("{}", msg);
-        process::exit(-1);
-    }
+    
 
-  
-
-    println!("{}", mat);
     /* 
         TODO:
         CHANGE MATRIX TRANSPOSITION TO BE IN-PLACE

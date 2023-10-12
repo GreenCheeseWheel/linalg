@@ -25,6 +25,22 @@ impl Matrix {
         }
     }
 
+    pub fn from(file_path:&str) -> Result<Matrix, &str>
+    {
+        if let Some(matrix_info)  =  file_reader::read_csv(file_path) {
+           return Ok(
+            Matrix {
+                rows: matrix_info.1,
+                cols: matrix_info.2,
+                data: matrix_info.0
+            }
+            );
+        } 
+
+        Err("Could not read file")
+
+    }
+
     // RETURNS FALSE IF OPERATION CANNOT BE COMPLETED
     pub fn set_data(&mut self, data:Vec<f64>) -> bool
     {
@@ -161,12 +177,12 @@ impl Matrix {
     {
         if let Some(vec) = file_reader::read_csv(file_path)
         {   
-            if vec.len() != self.rows * self.cols
+            if vec.0.len() != self.rows * self.cols
             {
-                return Err(format!("Invalid matrix dimensions. Matrix contains {} elements while csv contains {} elements", self.rows * self.cols, vec.len()));
+                return Err(format!("Invalid matrix dimensions. Matrix contains {} elements while csv contains {} elements", self.rows * self.cols, vec.0.len()));
             }
 
-            self.data = vec;
+            self.data = vec.0;
 
             return Ok(true);
         }
