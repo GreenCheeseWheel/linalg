@@ -1,7 +1,7 @@
 use linalg::Matrix;
 
 fn main() {
-    let mut mat = Matrix::new(2, 4);
+    let mut mat = Matrix::new(2, 7);
     
     mat.read_csv("./matrix.csv");
   

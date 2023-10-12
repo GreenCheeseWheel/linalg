@@ -39,7 +39,15 @@ pub fn read_csv(file_path:&str) -> Option<Vec<f64>>
                 let matrix_element:f64 = line_bytes[stored_ind..col].parse().expect(&format!("Element in row {line_num} and column {col} is not a number"));
                 result.push(matrix_element);
                 stored_ind = col+1;
+                continue;
             }
+
+            if col == line_bytes.len()-1
+            {
+                let matrix_element:f64 = line_bytes[stored_ind..].parse().expect(&format!("Element in row {line_num} and column {col} is not a number"));
+                result.push(matrix_element);
+            }
+
         }
 
     }
