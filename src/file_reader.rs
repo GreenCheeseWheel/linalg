@@ -1,39 +1,49 @@
-use std::fs;
+use std::fs::read_to_string;
+
+fn read_lines(filename: &str) -> Vec<String> {
+    let mut result = Vec::new();
+
+    for line in read_to_string(filename).unwrap().lines() {
+        result.push(line.to_string())
+    }
+
+    result
+}
 
 // THIS FUNCTION READS .csv FILES AND RETURN A VEC 
 // WITH IT'S VALUES
 pub fn read_csv(file_path:&str) -> Option<Vec<f64>>
 {
-    let file = match fs::read(file_path){
-        Ok(file_vec) => file_vec,
-        Err(_) => vec![0]
-    };
+    let file = read_lines(file_path);
 
-    if file.len() == 1
+
+
+    if file.len() == 0
     {
         return None;
     }
 
     let mut result:Vec<f64> = vec![];
-    let mut stored_ind = 0;
+    
 
-    for i in 1..file.len()
+    for line_num in 0..file.len()
     {
-        if file[i] == b','
+        let mut stored_ind = 0;
+
+        let line_bytes = &file[line_num];
+
+        for (col, byte) in line_bytes.as_bytes().iter().enumerate()
         {
-            let mut num = String::new();
-
-            for byte in file[stored_ind..i].iter()
+            if *byte == b','
             {
-                num.push(*byte as char);
+                let matrix_element:f64 = line_bytes[stored_ind..col].parse().expect(&format!("Element in row {line_num} and column {col} is not a number"));
+                result.push(matrix_element);
+                stored_ind = col+1;
             }
-        
-            let num:f64 = num.parse().expect("Invalid csv file provided");    
-            result.push(num);
-
-            stored_ind = i+1;
         }
+
     }
+
 
 
     Some(result)

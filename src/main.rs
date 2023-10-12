@@ -1,4 +1,4 @@
-use linalg::{Matrix, matrix_product};
+use linalg::Matrix;
 
 fn main() {
     let mut mat = Matrix::new(2, 4);
@@ -6,6 +6,7 @@ fn main() {
     mat.read_csv("./matrix.csv");
   
 
+    println!("{}", mat);
     /* 
         TODO:
 
