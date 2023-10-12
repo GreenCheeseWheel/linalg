@@ -70,10 +70,6 @@ impl Matrix {
             self.data[(r2-1)*self.cols + i] = stored;   
         }
 
-
-        
-
-
         return true;
 
     }

@@ -9,6 +9,7 @@ fn main() {
 
     let mat = Matrix::from(file_path);
 
+
     if let Ok(mut nice) = mat {
         nice.swap_rows(3, 6);
         println!("NICE SWAPPED: {}", nice);
@@ -16,7 +17,7 @@ fn main() {
 
     /* 
         TODO:
-        IMPLEMENT BASIC MATRIX OPERATIONS (SWAP ROWS TO BE IMPLEMENTED FIRST)
+        IMPLEMENT BASIC MATRIX OPERATIONS (SCALAR MULTIPLICATION TO BE IMPLEMENTED, THEN ROW ADDITION)
 
         MAKE getEchelon FUNCTION USE OPTIMIZED PIVOTS
 
