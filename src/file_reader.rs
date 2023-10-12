@@ -10,12 +10,12 @@ fn read_lines(filename: &str) -> Vec<String> {
     result
 }
 
+
 // THIS FUNCTION READS .csv FILES AND RETURN A VEC 
 // WITH IT'S VALUES
 pub fn read_csv(file_path:&str) -> Option<Vec<f64>>
 {
     let file = read_lines(file_path);
-
 
 
     if file.len() == 0
@@ -28,6 +28,7 @@ pub fn read_csv(file_path:&str) -> Option<Vec<f64>>
 
     for line_num in 0..file.len()
     {
+        
         let mut stored_ind = 0;
 
         let line_bytes = &file[line_num];
@@ -50,7 +51,9 @@ pub fn read_csv(file_path:&str) -> Option<Vec<f64>>
 
         }
 
+
     }
+
 
 
 
