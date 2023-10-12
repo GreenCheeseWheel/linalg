@@ -55,22 +55,19 @@ impl Matrix {
     }
 
 
-    /*
-    NOT IMPLEMENTED FOR THE MOMENT
-    -
-    --
-    ---
-    ----
-    ---
-    --
-    -
+  
     pub fn get_echelon(&self) -> Result<Matrix, &str>
     {
        
         let mut mat = self.data.clone();
 
         // GAUSS-JORDAN
-        for k in 0..self.cols {
+        for k in 0..self.rows {
+
+            if k >= self.cols
+            {
+                break;
+            }
 
             // PIVOT ELEMENT
             let pivot = mat[k*self.cols + k];
@@ -89,7 +86,13 @@ impl Matrix {
                 // AND UPDATE THE ROW AS IF WE HAD DONE AN OPERATION OF TYPE
                 // ROW = ROW + x * OTHER_ROW
                 for j in k..self.cols
-                {
+                {   
+                    if j <= k
+                    {
+                        mat[i*self.cols + j] = 0.0;
+                        continue;
+                    }
+
                     mat[i*self.cols + j] -= factor*mat[k*self.cols + j];
                 }
             }
@@ -106,7 +109,7 @@ impl Matrix {
         )
 
     }
-    */
+  
 
   
     pub fn pow(&self, n:u32) -> Result<Matrix, &str>

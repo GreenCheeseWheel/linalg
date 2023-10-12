@@ -1,11 +1,12 @@
-use std::process;
 use std::time::SystemTime;
 use linalg::Matrix;
 
 fn main() {
-    let mat = Matrix::from("./iris.csv").unwrap();
-    
-    
+    let mat = Matrix::from("./iris.csv");
+
+    if let Ok(nice) = mat {
+        println!("{}", nice.get_echelon().unwrap());
+    }
 
     /* 
         TODO:
