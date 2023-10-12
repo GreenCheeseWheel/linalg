@@ -157,12 +157,21 @@ impl Matrix {
         Ok(result)
     }
 
-    pub fn read_csv(&mut self, file_path:&str)
+    pub fn read_csv(&mut self, file_path:&str) -> Result<bool, String>
     {
         if let Some(vec) = file_reader::read_csv(file_path)
-        {
+        {   
+            if vec.len() != self.rows * self.cols
+            {
+                return Err(format!("Invalid matrix dimensions. Matrix contains {} elements while csv contains {} elements", self.rows * self.cols, vec.len()));
+            }
+
             self.data = vec;
+
+            return Ok(true);
         }
+
+        Err(String::from("Could not read csv file"))
     }
 
     pub fn transpose(&mut self)
