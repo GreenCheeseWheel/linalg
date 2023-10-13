@@ -245,6 +245,8 @@ impl Matrix {
 
 
 
+
+
 //////
 //
 // DISPLAY IMPLEMENTATIONS HERE
@@ -281,6 +283,8 @@ impl Display for Matrix
 }
 
 
+
+
 //////
 //
 // CLONE AND COPY IMPLEMENTATIONS HERE
@@ -297,6 +301,8 @@ impl Clone for Matrix
         }
     }
 }
+
+
 
 
 //////
@@ -343,10 +349,15 @@ impl ops::Mul<&Matrix> for f64
 
 impl ops::Mul<&Matrix> for &Matrix
 {
-    type Output = Result<Matrix, &'static str>;
+    type Output =   Matrix;
 
     fn mul(self, rhs: &Matrix) -> Self::Output {
-        matrix_product(self, rhs)
+
+        match matrix_product(self, rhs) {
+            Ok(matrix) => return matrix,
+            Err(msg) => panic!("ERROR MULTIPLYING MATRICES: {}", msg)
+        }
+       
     }
 }
 
