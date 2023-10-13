@@ -1,5 +1,3 @@
-use std::time::SystemTime;
-use std::env;
 use linalg::Matrix;
 
 /*
@@ -10,26 +8,15 @@ use linalg::Matrix;
 
     2) CUALQUIER FUNCIÓN QUE REALICE UNA OPERACIÓN ARITMÉTICA SOBRE UNA O MÁS MATRICES
     DEVOLVERÁ SIEMPRE UN RESULT<MATRIX, &STR>
-
 */
 
 fn main() {
-    let file_path:Vec<String> = env::args().collect();
     
-    let file_path = file_path.get(1).expect("You must provide a file path!");
+    let mat_res = Matrix::from("./matrix.csv");
 
-    let mat = Matrix::from(file_path);
-
-
-    if let Ok(mut nice) = mat {
-        
-        let mut new_mat = nice.clone();
-        new_mat.transpose();
-        nice.add_row(2, 3, 4.5);
-
-        let square = &(0.0005 * &new_mat) * &nice; 
-        println!("{}",  square.pow(3).unwrap() );
-        
+    if let Ok(mat) = mat_res 
+    {
+        println!("{}", mat.det().unwrap());
     }
 
     /* 
@@ -42,5 +29,4 @@ fn main() {
             4) Check the usual stuff
     */
     
-
 }  

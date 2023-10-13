@@ -107,8 +107,7 @@ impl Matrix {
   
     pub fn get_echelon(&self) -> Result<Matrix, &str>
     {
-       
-        let mut mat = self.data.clone();
+        let mut matrix = self.clone();
 
         // GAUSS-JORDAN
         for k in 0..self.rows {
@@ -119,7 +118,20 @@ impl Matrix {
             }
 
             // PIVOT ELEMENT
-            let pivot = mat[k*self.cols + k];
+            let mut pivot:f64 = 0.0;
+            let mut row = k;
+
+            for i in k..self.rows
+            {
+                if matrix.data[i*self.cols + k].abs() > pivot
+                {
+                    pivot = matrix.data[i*self.cols + k];
+                    row = i;
+                }
+            }
+
+            matrix.swap_rows(k+1, row+1);
+            
 
             if pivot == 0.0
             {
@@ -129,7 +141,7 @@ impl Matrix {
             // HERE WE GO THROUGH THE ELEMENTS BELOW THE PIVOT
             for i in k+1..self.rows
             {
-                let factor = mat[i*self.cols + k] / pivot;
+                let factor = matrix.data[i*self.cols + k] / pivot;
 
                 // WE SET THE MULTIPLICATIVE FACTOR NEEDED TO MAKE THIS ELEMENT 0
                 // AND UPDATE THE ROW AS IF WE HAD DONE AN OPERATION OF TYPE
@@ -138,24 +150,17 @@ impl Matrix {
                 {   
                     if j <= k
                     {
-                        mat[i*self.cols + j] = 0.0;
+                        matrix.data[i*self.cols + j] = 0.0;
                         continue;
                     }
 
-                    mat[i*self.cols + j] -= factor*mat[k*self.cols + j];
+                    matrix.data[i*self.cols + j] -= factor*matrix.data[k*self.cols + j];
                 }
             }
         
         }
 
-        Ok(
-            Matrix 
-            {
-                rows: self.rows,
-                cols: self.cols,
-                data: mat
-            }
-        )
+        Ok(matrix)
 
     }
   
