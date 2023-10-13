@@ -16,7 +16,16 @@ fn main() {
 
     if let Ok(mat) = mat_res 
     {
-        println!("{}", mat.det().unwrap());
+        
+        for i in 0..mat.rows
+        {
+            for j in 0..mat.cols
+            {
+                println!("COFACTOR: {}", mat.get_cofactor(i+1, j+1).unwrap());
+            }
+        }
+
+        
     }
 
     /* 

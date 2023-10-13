@@ -1,6 +1,6 @@
 pub mod file_reader;
 pub mod matrix_product;
-use std::{ops, fmt::Display, fmt::Formatter};
+use std::{ops::{self, IndexMut}, fmt::Display, fmt::Formatter, process::id};
 
 use matrix_product::matrix_product;
 
@@ -13,9 +13,15 @@ pub struct Matrix
 }
 
 impl Matrix {
-    
-    // INITIALIZES A NULL MATRIX
+    ///////
+    // ALL INSTANTIATION METHODS
+    ///////
     pub fn new(rows:usize, cols:usize) -> Matrix {
+        if rows <= 0 || cols <= 0
+        {
+            panic!("Invalid matrix instantiation. Rows and columns must be greater than zero");
+        }
+
         let data:Vec<f64> = vec![0.0; rows * cols];
         
         Matrix { 
@@ -41,6 +47,26 @@ impl Matrix {
 
     }
 
+    pub fn identity(order:usize) -> Matrix
+    {
+        let mut data:Vec<f64> = vec![0.0; order*order];
+
+        for i in 0..order
+        {
+            data[i*order + i] = 1.0;
+        }
+
+        Matrix { 
+            rows: order, 
+            cols: order, 
+            data 
+        }
+
+    }
+
+
+
+
     // RETURNS FALSE IF OPERATION CANNOT BE COMPLETED
     pub fn set_data(&mut self, data:Vec<f64>) -> bool
     {
@@ -53,6 +79,11 @@ impl Matrix {
 
         true
     }
+
+
+    ///////
+    // ALL ELEMENTARY OPERATION METHODS
+    ///////
 
     pub fn swap_rows(&mut self, r1:usize, r2:usize) -> bool
     {
@@ -91,7 +122,7 @@ impl Matrix {
 
     pub fn add_row(&mut self, target:usize, row:usize, scalar:f64) -> bool
     {
-        if target > self.rows || row > self.rows
+        if target > self.rows || row > self.rows || target == 0 || row == 0
         {
             return false;
         }
@@ -99,20 +130,22 @@ impl Matrix {
         for i in 0..self.cols
         {
             self.data[(target-1)*self.cols + i] += scalar*self.data[(row-1)*self.cols + i];
+            self.data[(target-1)*self.cols + i] = (self.data[(target-1)*self.cols + i] * 1000000.0).round() / 1000000.0;
         }
 
         true
     }
 
   
-    pub fn get_echelon(&self) -> Result<Matrix, &str>
+
+    pub fn get_echelon(&self) -> (Matrix, usize)
     {
         let mut matrix = self.clone();
-
+        let mut row_swaps:usize = 0;
         // GAUSS-JORDAN
         for k in 0..self.rows {
 
-            if k >= self.cols
+            if k == self.cols-1
             {
                 break;
             }
@@ -130,12 +163,17 @@ impl Matrix {
                 }
             }
 
+
             matrix.swap_rows(k+1, row+1);
             
+            if k != row
+            {
+                row_swaps += 1;
+            }
 
             if pivot == 0.0
             {
-                return Err("Matrix has a zero diagonal element rows");
+                continue;
             }
 
             // HERE WE GO THROUGH THE ELEMENTS BELOW THE PIVOT
@@ -148,24 +186,53 @@ impl Matrix {
                 // ROW = ROW + x * OTHER_ROW
                 for j in k..self.cols
                 {   
-                    if j <= k
-                    {
-                        matrix.data[i*self.cols + j] = 0.0;
-                        continue;
-                    }
-
                     matrix.data[i*self.cols + j] -= factor*matrix.data[k*self.cols + j];
                 }
             }
         
         }
 
-        Ok(matrix)
+        (matrix, row_swaps)
 
     }
-  
+    
+    pub fn get_cofactor(&self, row:usize, column:usize) -> Result<f64, &str>
+    {
+        if row > self.rows || column > self.cols || row <= 0 || column <= 0
+        {
+            return Err("Invalid row or column");
+        }
 
-  
+        if self.cols != self.rows
+        {
+            return Err("Tried calculating cofactor for non-square matrix");
+        }
+
+        let mut matrix = Matrix::new(self.rows-1, self.cols-1);
+        let mut data:Vec<f64> = vec![];
+        let mut cofactor = 0.0;
+
+        for i in 0..self.rows
+        {
+            for j in 0..self.cols
+            {
+                if i + 1 != row && j + 1 != column
+                {
+                    data.push(self.data[i*self.cols + j]);
+                }
+            }
+        }
+
+        matrix.set_data(data);
+
+
+        if let Ok(det) = matrix.det()  {
+            cofactor = det;
+        } 
+
+        Ok(cofactor)
+    }
+
     pub fn pow(&self, n:u32) -> Result<Matrix, &str>
     {
         let mut res = Matrix::new(self.rows, self.cols);
@@ -182,6 +249,8 @@ impl Matrix {
         Ok(res)
     }
 
+  
+
     pub fn det(&self) -> Result<f64, &str>
     {
         if self.rows != self.cols
@@ -192,21 +261,24 @@ impl Matrix {
         let n = self.rows;
         let mut result = 1.0;
         
-        if let Ok(matrix) = self.get_echelon()
-        {
-            // WE CALCULATE THE DETERMINANT USING THE 
-            // DIAGONAL OF THIS UPPER-TRIANGULAR EQUIVALENT MATRIX
-            for k in 0..n
-            {
-                result *= matrix.data[k*n + k];
-            }
 
-            return Ok(result);
-        }
-     
-        Ok(0.0)
+        // WE CALCULATE THE DETERMINANT USING THE 
+        // DIAGONAL OF THIS UPPER-TRIANGULAR EQUIVALENT MATRIX
+        let matrix = self.get_echelon();
         
+        for k in 0..n
+        {
+            result *= matrix.0.data[k*n + k];
+        }
+
+        let num_swaps = matrix.1 as u32;
+
+        result *= (-1 as i32).pow(num_swaps) as f64;
+
+        Ok(result)
+                
     }
+
 
     pub fn read_csv(&mut self, file_path:&str) -> Result<bool, String>
     {
@@ -393,6 +465,29 @@ impl ops::Add<&Matrix> for &Matrix {
         
         mat
         
+    }
+
+}
+
+impl ops::Sub<&Matrix> for &Matrix {
+    
+    type Output = Matrix;
+
+    fn sub(self, rhs: &Matrix) -> Self::Output {
+        
+        if self.rows != rhs.rows || self.cols != rhs.cols
+        {
+            panic!("Matrices must have the same dimensions!");
+        }
+
+        let mut matrix = self.clone();
+
+        for i in 0..self.data.len()
+        {
+            matrix.data[i] -= rhs.data[i];
+        }
+
+        matrix
     }
 
 }
