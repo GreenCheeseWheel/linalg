@@ -16,16 +16,9 @@ fn main() {
 
     if let Ok(mat) = mat_res 
     {
-        
-        for i in 0..mat.rows
-        {
-            for j in 0..mat.cols
-            {
-                println!("COFACTOR: {}", mat.get_cofactor(i+1, j+1).unwrap());
-            }
-        }
-
-        
+        let mut identity = &mat.get_inverse().unwrap() * &mat;
+        identity.round(2);
+        println!("{}", identity);    
     }
 
     /* 

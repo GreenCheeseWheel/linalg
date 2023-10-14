@@ -130,7 +130,7 @@ impl Matrix {
         for i in 0..self.cols
         {
             self.data[(target-1)*self.cols + i] += scalar*self.data[(row-1)*self.cols + i];
-            self.data[(target-1)*self.cols + i] = (self.data[(target-1)*self.cols + i] * 1000000.0).round() / 1000000.0;
+            self.data[(target-1)*self.cols + i] = self.data[(target-1)*self.cols + i];
         }
 
         true
@@ -145,12 +145,7 @@ impl Matrix {
         // GAUSS-JORDAN
         for k in 0..self.rows {
 
-            if k == self.cols-1
-            {
-                break;
-            }
 
-            // PIVOT ELEMENT
             let mut pivot:f64 = 0.0;
             let mut row = k;
 
@@ -181,13 +176,8 @@ impl Matrix {
             {
                 let factor = matrix.data[i*self.cols + k] / pivot;
 
-                // WE SET THE MULTIPLICATIVE FACTOR NEEDED TO MAKE THIS ELEMENT 0
-                // AND UPDATE THE ROW AS IF WE HAD DONE AN OPERATION OF TYPE
-                // ROW = ROW + x * OTHER_ROW
-                for j in k..self.cols
-                {   
-                    matrix.data[i*self.cols + j] -= factor*matrix.data[k*self.cols + j];
-                }
+                matrix.add_row(i+1, k+1, -factor);
+                
             }
         
         }
@@ -232,6 +222,76 @@ impl Matrix {
 
         Ok(cofactor)
     }
+
+
+    pub fn get_inverse(&self) -> Result<Matrix, &str>
+    {
+        if self.rows != self.cols
+        {
+            return  Err("Must be a square matrix");
+        }
+
+        let mut matrix = self.clone();
+        let mut identity = Matrix::identity(self.rows);
+        // GAUSS-JORDAN
+        for k in 0..self.rows {
+
+            let mut pivot:f64 = 0.0;
+            let mut row = k;
+
+            for i in k..self.rows
+            {
+                if matrix.data[i*self.cols + k].abs() > pivot
+                {
+                    pivot = matrix.data[i*self.cols + k];
+                    row = i;
+                }
+            }
+
+
+            
+            if k != row
+            {
+                matrix.swap_rows(k+1, row+1);
+                identity.swap_rows(k+1, row+1);
+            }
+
+            if pivot == 0.0
+            {
+                continue;
+            }
+
+            // HERE WE GO THROUGH THE ELEMENTS BELOW THE PIVOT
+            for i in k+1..self.rows
+            {
+                let factor = matrix.data[i*self.cols + k] / pivot;
+
+                matrix.add_row(i+1, k+1, -factor);
+                identity.add_row(i+1, k+1, -factor);
+        
+            }
+
+            for i in 0..k
+            {
+                let factor = matrix.data[i*self.cols + k] / pivot;
+
+                matrix.add_row(i+1, k+1, -factor);
+                identity.add_row(i+1, k+1, -factor);
+            }
+
+        }
+
+        for i in 0..self.cols
+        {
+            identity.mult_row(i+1, 1.0 / matrix.data[i*self.cols + i]);
+        }
+
+    
+
+        Ok(identity)
+
+    }
+
 
     pub fn pow(&self, n:u32) -> Result<Matrix, &str>
     {
@@ -317,6 +377,15 @@ impl Matrix {
 
     }
 
+    pub fn round(&mut self, decimal_places:i32)
+    {
+        let factor = 10.0_f64.powi(decimal_places);
+
+        for i in 0..self.data.len()
+        {
+            self.data[i] = (self.data[i] * factor).round() / factor;
+        }
+    }
 
 }
 
