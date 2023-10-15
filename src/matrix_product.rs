@@ -1,4 +1,4 @@
-use crate::Matrix;
+use crate::matrix::Matrix;
 
 pub fn dot_product(vec1:&Vec<f64>, vec2:&Vec<f64>) -> Result<f64, &'static str>
 {

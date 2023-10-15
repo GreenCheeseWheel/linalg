@@ -1,4 +1,4 @@
-use linalg::Matrix;
+use linalg::matrix::Matrix;
 
 /*
     REGLAS PARA EL DESARROLLO DE LA LIBRERIA
@@ -14,11 +14,12 @@ fn main() {
     
     let mat_res = Matrix::from("./matrix.csv");
 
-    if let Ok(mat) = mat_res 
-    {
-        
-        println!("{}", mat[(1, 0)]);    
-    }
+    let mut mat = Matrix::new(2, 3);
+
+    mat.set_data(vec![1.0, 1.0, 1.0, 3.56, 6.0, 1.56]);
+
+
+    println!("{}", mat.modulus());
 
     /* 
         TODO:
