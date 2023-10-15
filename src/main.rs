@@ -16,9 +16,8 @@ fn main() {
 
     if let Ok(mat) = mat_res 
     {
-        let mut identity = &mat.get_inverse().unwrap() * &mat;
-        identity.round(2);
-        println!("{}", identity);    
+        
+        println!("{}", mat[(1, 0)]);    
     }
 
     /* 

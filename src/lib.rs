@@ -474,6 +474,7 @@ impl ops::Mul<f64> for &Matrix
     }
 }
 
+
 impl ops::Mul<&Matrix> for f64
 {
     type Output = Matrix;
@@ -559,4 +560,24 @@ impl ops::Sub<&Matrix> for &Matrix {
         matrix
     }
 
+}
+
+//////
+//
+// QOL IMPLEMENTATIONS HERE
+//
+//////
+
+impl ops::Index<(usize, usize)> for Matrix {
+    type Output = f64;
+
+    fn index(&self, index: (usize, usize)) -> &Self::Output {
+        &self.data[index.0 * self.cols + index.1]
+    }
+}
+
+impl ops::IndexMut<(usize, usize)> for Matrix {
+    fn index_mut(&mut self, index: (usize, usize)) -> &mut Self::Output {
+        &mut self.data[index.0 * self.cols + index.1]
+    }
 }
