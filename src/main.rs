@@ -11,15 +11,12 @@ use linalg::{matrix::Matrix, lineal_eq::solve_system};
 */
 
 fn main() {
-    
-    let mat_res = Matrix::from("./matrix.csv");
+
+    let from_iter = Matrix::from_iterator(2, 2, vec![2.0, 3.0, 7.7, 1.15]);
 
 
-    if let Ok(matrix) = mat_res
-    {
 
-        
-    }
+    println!("{}", from_iter);
 
 
     /* 

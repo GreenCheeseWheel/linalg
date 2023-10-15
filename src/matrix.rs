@@ -1,9 +1,9 @@
+// Native library
 use std::{ops, fmt::Display, fmt::Formatter};
 
+// My crates
 use crate::file_reader;
 use crate::matrix_product::{self, matrix_product};
-
-
 
 pub struct Matrix
 {
@@ -47,6 +47,23 @@ impl Matrix {
 
     }
 
+    //
+    // Takes as argument any object that implements the IntoIterator trait (e.g. any vector)
+    //
+    pub fn from_iterator<T>(rows:usize, cols:usize, iter:T) -> Matrix 
+    where T: IntoIterator<Item = f64>
+    {
+        let mut data:Vec<f64> = vec![];
+
+        let mut as_iter = iter.into_iter();
+        //let mut element = as_iter.next();
+
+        let _:Vec<_> = as_iter.filter(|element| {data.push(*element); return false;}).collect();
+
+
+        Matrix { rows, cols, data }
+    }
+
     pub fn identity(order:usize) -> Matrix
     {
         let mut data:Vec<f64> = vec![0.0; order*order];
@@ -66,8 +83,6 @@ impl Matrix {
 
 
 
-
-    // RETURNS FALSE IF OPERATION CANNOT BE COMPLETED
     pub fn set_data(&mut self, data:Vec<f64>) -> bool
     {
         if data.len() != self.rows * self.cols
