@@ -258,7 +258,7 @@ impl Matrix {
 
             if pivot == 0.0
             {
-                continue;
+                return Err("Tried calculating inverse for matrix with zero determinant");
             }
 
             // HERE WE GO THROUGH THE ELEMENTS BELOW THE PIVOT
