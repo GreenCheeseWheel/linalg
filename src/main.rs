@@ -1,4 +1,4 @@
-use linalg::matrix::Matrix;
+use linalg::{matrix::Matrix, lineal_eq::solve_system};
 
 /*
     REGLAS PARA EL DESARROLLO DE LA LIBRERIA
@@ -14,12 +14,13 @@ fn main() {
     
     let mat_res = Matrix::from("./matrix.csv");
 
-    let mut mat = Matrix::new(2, 3);
 
-    mat.set_data(vec![1.0, 1.0, 1.0, 3.56, 6.0, 1.56]);
+    if let Ok(matrix) = mat_res
+    {
 
+        
+    }
 
-    println!("{}", mat.modulus());
 
     /* 
         TODO:

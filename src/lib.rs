@@ -1,3 +1,5 @@
 mod matrix_product;
-pub mod matrix;
 mod file_reader;
+pub mod matrix;
+pub mod lineal_eq;
+
