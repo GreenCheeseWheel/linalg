@@ -9,19 +9,21 @@ Right now it's main features are:
 - A 'Matrix' struct
 - Matrix instantiation through .csv files or any Vec\<f64\> collection
 - Addition and Multiplication of matrices
-- Calculation of the determinant of a square matrix
+- Calculation of the determinant of a matrix
 - Row reduction by Gauss method (Echelon form of a matrix)
-- Row swapping
+- Linear system of equations solver
+- Elementary operations on any matrix
+- Matrix multiplication by any scalar value
 - Matrix transposing
+- Matrix indexing using tuples
 - Matrix formatting for CLI display
 - .clone() method implemented for the Matrix struct
-- Operator overloading for + and *
+- Operator overloading for +, - and *
 
 ### What's to be implemented in the near future
 There is still a lot left to do, but my main priorities are:
-- Implementing basic row operations (Scalar multiplication and row addition)
 - Optimizing matrix multiplication and determinant calculations
-- Implementing partial pivoting to reduce rounding errors
+- Adding Vector and Matrix structs that can be stack allocated
 - Starting work on diagonalization (That is, calculating eigenvectors and eigenvalues)
 
 ### Where to find documentation
@@ -67,3 +69,23 @@ If you have two matrices you can perform addition or multiplication with them li
 ```
 
 Take into account that, when performing any operation, the dimensions of your matrices are taken into account. So pretty much any operation returns a Result enum with either your new matrix or an error string. You are then free to manage errors how you find fit.
+
+If you need to solve a system of linear equations you might use the linalg::lineal_eq::solve_system function.
+
+```Rust
+    let matrix_with_inverse = Matrix::from("file_path.csv");
+    
+    let solution_vec:Matrix = solve_system(matrix_with_inverse, some_column_vector);
+```
+
+*ATTENTION*
+The Matrix struct uses a single Vec collection to represent the instantiated matrix, so this makes indexing
+a bit more difficult. This decision was taken in order to optimize memory usage.
+
+So, if you want to get the element of the i-th row and j-th column you would index like this
+
+```Rust
+    let indexing_through_data = some_matrix.data[i * some_matrix.cols + j];
+
+    let indexing_through_overloading = some_matrix[(i, j)]; // Notice we use a tuple inside the brackets
+```
