@@ -1,4 +1,4 @@
-use linalg::{matrix::Matrix, lineal_eq::solve_system};
+use linalg::{matrix::Matrix, lineal_eq::solve_system, complex};
 
 /*
     REGLAS PARA EL DESARROLLO DE LA LIBRERIA
@@ -12,12 +12,10 @@ use linalg::{matrix::Matrix, lineal_eq::solve_system};
 
 fn main() {
 
-    let from_iter = Matrix::from_iterator(2, 2, vec![2.0, 3.0, 7.7, 1.15]);
+    let complex = complex::Complex::new(0.0, 10.5);
+    let complex_two = complex::Complex::new(0.0, 3.0);
 
-
-
-    println!("{}", from_iter);
-
+    println!("{}", &complex + &complex_two);
 
     /* 
         TODO:
