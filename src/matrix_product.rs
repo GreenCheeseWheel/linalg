@@ -1,3 +1,5 @@
+use std::backtrace;
+
 use crate::matrix::Matrix;
 
 pub fn dot_product(vec1:&Vec<f64>, vec2:&Vec<f64>) -> Result<f64, &'static str>
@@ -18,6 +20,17 @@ pub fn dot_product(vec1:&Vec<f64>, vec2:&Vec<f64>) -> Result<f64, &'static str>
 
     Ok(res)
 }
+
+pub fn projection(vec1:&Vec<f64>, vec2:&Vec<f64>) -> Matrix
+{
+    let mut proj = dot_product(vec2, vec1).unwrap();
+    proj /= dot_product(vec1, vec1).unwrap();
+
+    let mut matrix = Matrix::from_iterator(vec1.len(), 1, vec1.clone());
+    proj * &matrix
+}
+
+
 
 pub fn matrix_product(mat1:&Matrix, mat2:&Matrix) -> Result<Matrix, &'static str>
 {
@@ -63,4 +76,25 @@ pub fn matrix_product(mat1:&Matrix, mat2:&Matrix) -> Result<Matrix, &'static str
         }
     )
 
+}
+
+pub fn gram_schmidt(basis:&mut Vec<Matrix>) -> Vec<Matrix>
+{
+    let mut orth_basis:Vec<Matrix> = vec![basis[0].clone()];
+
+    println!("BASIS LEN: {}", basis.len());
+    for i in 1..basis.len()
+    {
+        let mut new_basis_vector = basis[i].clone();
+        let basis_vector = basis[i].clone();
+
+
+        for j in 0..orth_basis.len()
+        {
+            new_basis_vector = &new_basis_vector - &projection(&orth_basis[j].data, &basis_vector.data);
+        }
+        orth_basis.push(new_basis_vector);
+    }
+
+    orth_basis
 }

@@ -60,7 +60,7 @@ where T:Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + 
 }
 
 impl<T> Div<&Complex<T>> for &Complex<T> 
-where T:std::fmt::Display + Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Copy + Default + PartialEq
+where T:Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Copy + Default + PartialEq
 {
     type Output = Complex<T>;
 
@@ -68,7 +68,7 @@ where T:std::fmt::Display + Add<Output = T> + Mul<Output = T> + Sub<Output = T> 
 
      
         let conjugate = self * &rhs.conjugate();
-        println!("{}", conjugate);
+
 
         let mut unit = T::default(); 
 
@@ -81,10 +81,7 @@ where T:std::fmt::Display + Add<Output = T> + Mul<Output = T> + Sub<Output = T> 
             unit = self.imaginary / self.imaginary;
         }
 
-        println!("UNIT {}", unit);
-
         let unit = unit / (rhs.real*rhs.real + rhs.imaginary*rhs.imaginary); 
-
          
         return &conjugate * unit;
         

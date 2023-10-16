@@ -3,14 +3,19 @@ use std::{ops, fmt::Display, fmt::Formatter};
 
 // My crates
 use crate::file_reader;
-use crate::matrix_product::{self, matrix_product};
+use crate::matrix_product::{self, matrix_product, gram_schmidt, dot_product};
 
+/* 
+    THIS MATRIX STRUCT WILL REPRESENT A DYNAMIC MATRIX
+    STATIC MATRICES WILL BE ADDED LATER TO BE ABLE TO STORE IN THE STACK
+*/
 pub struct Matrix
 {
     pub rows:usize,
     pub cols:usize,
     pub data:Vec<f64>
 }
+
 
 impl Matrix {
     ///////
@@ -53,13 +58,9 @@ impl Matrix {
     pub fn from_iterator<T>(rows:usize, cols:usize, iter:T) -> Matrix 
     where T: IntoIterator<Item = f64>
     {
-        let mut data:Vec<f64> = vec![];
-
-        let mut as_iter = iter.into_iter();
-        //let mut element = as_iter.next();
-
-        let _:Vec<_> = as_iter.filter(|element| {data.push(*element); return false;}).collect();
-
+        let as_iter = iter.into_iter();
+    
+        let data:Vec<f64> = as_iter.collect();
 
         Matrix { rows, cols, data }
     }
@@ -152,6 +153,32 @@ impl Matrix {
     }
 
   
+    pub fn get_row(&self, row:usize) -> Matrix
+    {
+        let mut row_vector:Vec<f64> = vec![]; 
+
+        for i in 0..self.cols
+        {
+            row_vector.push(self.data[(row-1)*self.cols + i]);
+        }
+
+
+        Matrix { rows: 1, cols: self.cols, data: row_vector }
+    }
+
+    pub fn get_col(&self, col:usize) -> Matrix
+    {
+        let mut col_vector:Vec<f64> = vec![]; 
+
+        for i in 0..self.rows
+        {
+            col_vector.push(self.data[i*self.cols + col-1]);
+        }
+
+
+        Matrix { rows: self.rows, cols: 1, data: col_vector }
+    }
+
 
     pub fn get_echelon(&self) -> (Matrix, usize)
     {
@@ -308,10 +335,72 @@ impl Matrix {
     }
 
 
+    //
+    // EIGENVECTORS AND EIGENVALUES WILL BE CALCULATED USING 
+    // GERSCHGORIN'S DISCS THEOREM
+    //
+    pub fn get_gerschgorin(&self) -> Result<Vec<(f64, f64)>, &str>
+    {
+        if self.rows != self.cols
+        {
+            return Err("Tried calculating eigenvalues and eigenvectors for a non-square matrix");
+        }
+
+        let mut discs:Vec<(f64, f64)> = vec![];
+
+        for i in 0..self.rows
+        {
+            let disc_center = self.data[i*self.cols + i];
+            let mut radius = 0.0;
+            
+            for j in 0..self.cols
+            {
+                if j != i
+                {
+                    radius += self.data[i*self.cols + j].abs();
+                }
+            }
+
+            discs.push((disc_center, radius));
+        }
+
+        Ok(discs)
+    }
+
+    //////////////////
+    //
+    // IMPLEMENTATION FOR DECOMPOSITIONS BELOW
+    //
+    //////////////////
+    
+    pub fn qr_decompose(&self) -> (Matrix, Matrix)
+    {
+        let mut q = self.clone();
+
+        let mut r = Matrix::new(self.rows, self.cols);
+        
+        // We get the columns of the matrix first
+        // as a basis
+
+        let mut basis:Vec<Matrix> = vec![];
+
+        for i in 1..=q.cols
+        {
+            let row = q.get_col(i);
+            basis.push(row);
+        }
+
+        let mut basis = gram_schmidt(&mut basis);
+        
+
+        (q, r)
+    }
+
+
     pub fn pow(&self, n:u32) -> Result<Matrix, &str>
     {
-        let mut res = Matrix::new(self.rows, self.cols);
-        res.set_data(self.data.clone());
+        let mut res = self.clone();
+        
 
         for _ in 1..n
         {
