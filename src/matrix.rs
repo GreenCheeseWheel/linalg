@@ -375,23 +375,46 @@ impl Matrix {
     
     pub fn qr_decompose(&self) -> (Matrix, Matrix)
     {
-        let mut q = self.clone();
-
-        let mut r = Matrix::new(self.rows, self.cols);
         
         // We get the columns of the matrix first
         // as a basis
 
         let mut basis:Vec<Matrix> = vec![];
 
-        for i in 1..=q.cols
+        for i in 1..=self.cols
         {
-            let row = q.get_col(i);
+            let row = self.get_col(i);
             basis.push(row);
         }
 
         let mut basis = gram_schmidt(&mut basis);
         
+        // basis.len() is the same as q.cols
+        // Here we create the Q matrix of the QR factorization
+        for i in 0..basis.len()
+        {
+            let modulus = basis[i].modulus();
+            basis[i] =  &basis[i] * (1.0 / modulus);
+        }
+
+        let mut q = Matrix::new(basis.len(), basis[0].rows);
+        let mut data:Vec<f64> = vec![];
+        for column in &basis
+        {
+
+            for element in &column.data
+            {
+                data.push(*element);
+            }
+
+            
+        }
+
+        q.set_data(data);
+        
+        let r = &q * self;
+
+        q.transpose();
 
         (q, r)
     }

@@ -16,6 +16,9 @@ fn main() {
 
     let eigen = mat.qr_decompose();
 
+   
+
+    println!("{}", &eigen.0 * &eigen.1);
 
     /* 
         TODO:
