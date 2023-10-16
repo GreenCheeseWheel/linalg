@@ -1,20 +1,17 @@
 use std::ops::{Mul, Add, Sub, Div};
 
-pub trait Number 
-where Self:std::fmt::Display
+pub trait Number<Rhs> 
 {
-    fn print(&self)
-    {
-        println!("{}", self);
-    }
 }
 
-impl Number for f64 {
-    
+impl<Rhs> Number<Rhs> for f64 
+where Rhs: Add
+{
+
 }
 
 #[derive(Debug)]
-pub struct Complex<T: Add<Output = T> + Sub<Output=T> + Mul<Output = T> + Div<Output = T> >
+pub struct Complex<T: Add<Output = T> + Sub<Output=T> + Mul<Output = T> + Div<Output = T>>
 {
     pub real:T,
     pub imaginary:T
