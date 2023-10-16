@@ -15,7 +15,9 @@ fn main() {
     let complex = complex::Complex::new(0.0, 10.5);
     let complex_two = complex::Complex::new(0.0, 3.0);
 
-    println!("{}", &complex + &complex_two);
+    let div = &complex_two / &complex;
+
+    println!("{}", div);
 
     /* 
         TODO:

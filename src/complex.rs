@@ -1,14 +1,5 @@
 use std::ops::{Mul, Add, Sub, Div};
 
-pub trait Number<Rhs> 
-{
-}
-
-impl<Rhs> Number<Rhs> for f64 
-where Rhs: Add
-{
-
-}
 
 #[derive(Debug)]
 pub struct Complex<T: Add<Output = T> + Sub<Output=T> + Mul<Output = T> + Div<Output = T>>
@@ -23,6 +14,12 @@ impl<T: Add<Output = T> + Mul<Output = T> + Sub<Output = T>+ Div<Output = T> + C
     {
         Complex { real, imaginary }
     }
+
+    pub fn conjugate(&self) -> Complex<T>
+    {
+        Complex { real: self.real, imaginary: self.imaginary-self.imaginary - self.imaginary }
+    }
+
 }
 
 impl<T> Add<&Complex<T>> for &Complex<T>
@@ -38,6 +35,16 @@ where T:Add<Output = T> + Sub<Output=T> + Mul<Output = T> + Div<Output = T> + Co
     }
 }
 
+impl<T> Mul<T> for &Complex<T> 
+where T:Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Copy
+{
+    type Output=Complex<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Complex{real: self.real * rhs, imaginary: self.imaginary * rhs}
+    }
+}
+
 
 impl<T> Mul<&Complex<T>> for &Complex<T> 
 where T:Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Copy
@@ -49,6 +56,38 @@ where T:Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + 
         let imaginary = self.real*rhs.imaginary + self.imaginary * rhs.real;
 
         Complex{real, imaginary} 
+    }
+}
+
+impl<T> Div<&Complex<T>> for &Complex<T> 
+where T:std::fmt::Display + Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Copy + Default + PartialEq
+{
+    type Output = Complex<T>;
+
+    fn div(self, rhs: &Complex<T>) -> Self::Output {
+
+     
+        let conjugate = self * &rhs.conjugate();
+        println!("{}", conjugate);
+
+        let mut unit = T::default(); 
+
+        if self.real != T::default()
+        {
+            unit = self.real / self.real;
+        }
+        else if self.imaginary != T::default()
+        {
+            unit = self.imaginary / self.imaginary;
+        }
+
+        println!("UNIT {}", unit);
+
+        let unit = unit / (rhs.real*rhs.real + rhs.imaginary*rhs.imaginary); 
+
+         
+        return &conjugate * unit;
+        
     }
 }
 
