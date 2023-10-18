@@ -1,8 +1,7 @@
 // Private modules
-mod matrix_product;
 mod file_reader;
-pub mod complex;
+mod matrix_product;
 
 // Public modules
-pub mod matrix;
 pub mod lineal_eq;
+pub mod matrix;

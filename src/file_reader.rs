@@ -10,56 +10,47 @@ fn read_lines(filename: &str) -> Vec<String> {
     result
 }
 
-
-// THIS FUNCTION READS .csv FILES AND RETURN A VEC 
+// THIS FUNCTION READS .csv FILES AND RETURN A VEC
 // WITH IT'S VALUES
-pub fn read_csv(file_path:&str) -> Option<(Vec<f64>, usize, usize)>
-{
+pub fn read_csv(file_path: &str) -> Option<(Vec<f64>, usize, usize)> {
     let file = read_lines(file_path);
 
-
-    if file.len() == 0
-    {
+    if file.len() == 0 {
         return None;
     }
 
-    let mut result:Vec<f64> = vec![];
+    let mut result: Vec<f64> = vec![];
 
-    let mut cols:usize = 0;      
+    let mut cols: usize = 0;
 
-    for line_num in 0..file.len()
-    {
-        
+    for line_num in 0..file.len() {
         let mut stored_ind = 0;
-        let mut columns = 0;  
+        let mut columns = 0;
 
         let line_bytes = &file[line_num];
 
-        for (col, byte) in line_bytes.as_bytes().iter().enumerate()
-        {
-            if *byte == b','
-            {
-                let matrix_element:f64 = line_bytes[stored_ind..col].parse().expect(&format!("Element in row {line_num} and column {col} is not a number"));
+        for (col, byte) in line_bytes.as_bytes().iter().enumerate() {
+            if *byte == b',' {
+                let matrix_element: f64 = line_bytes[stored_ind..col].parse().expect(&format!(
+                    "Element in row {line_num} and column {col} is not a number"
+                ));
                 result.push(matrix_element);
-                stored_ind = col+1;
+                stored_ind = col + 1;
                 columns += 1;
                 continue;
             }
 
-            if col == line_bytes.len()-1
-            {
-                let matrix_element:f64 = line_bytes[stored_ind..].parse().expect(&format!("Element in row {line_num} and column {col} is not a number"));
+            if col == line_bytes.len() - 1 {
+                let matrix_element: f64 = line_bytes[stored_ind..].parse().expect(&format!(
+                    "Element in row {line_num} and column {col} is not a number"
+                ));
                 result.push(matrix_element);
                 columns += 1;
             }
-
         }
 
         cols = columns;
     }
-
-
-
 
     Some((result, file.len(), cols))
 }
