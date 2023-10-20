@@ -438,7 +438,7 @@ impl Matrix {
 impl Display for Matrix {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         for i in 0..self.rows {
-            if let Err(msg) = writeln!(f, "R{} <-> ", i + 1) {
+            if let Err(msg) = write!(f, "R{} <-> ", i + 1) {
                 return Err(msg);
             }
 
@@ -448,12 +448,12 @@ impl Display for Matrix {
                 }
             }
 
-            if let Err(msg) = writeln!(f, "") {
+            if let Err(msg) = writeln!(f) {
                 return Err(msg);
             }
         }
 
-        writeln!(f, "\n")
+        writeln!(f)
     }
 }
 

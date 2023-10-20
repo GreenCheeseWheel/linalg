@@ -1,4 +1,6 @@
-use linalg::{matrix::Matrix, lineal_eq::solve_system};
+use std::{thread, time::Duration};
+
+use linalg::{matrix::Matrix, lineal_eq::solve_system, thread_pool::ThreadPool};
 /*
     REGLAS PARA EL DESARROLLO DE LA LIBRERIA
 
@@ -10,27 +12,12 @@ use linalg::{matrix::Matrix, lineal_eq::solve_system};
 */
 
 fn main() {
-    // We work in a matrix.csv file that represents a non-singular matrix
-    let file_result = Matrix::from("./matrix.csv");
 
-    if let Ok(matrix) = file_result {
-        
-        let echelon = matrix.get_echelon();
-        println!("Number of row swaps needed to get echelon form: {}", echelon.1);
-
-        // This matrix has an inverse, so we unwrap the result
-        let inverse = matrix.get_inverse().unwrap();
-        
-        let solution_vec = solve_system(&inverse, &Matrix::from_iterator(inverse.rows, 1, vec![1.0; inverse.rows]));
-        
-        println!("SOLUTION: {}", solution_vec.as_ref().unwrap());
-
-        println!("ORIGINAL VEC: {}", &inverse * &solution_vec.unwrap());
-
-    }
-
+    
     /*
         TODO:
+
+        IMPLEMENT CONCURRENCY
 
         IMPLEMENT DIAGONALIZATION IN THESE STEPS:
             1) Find the characteristic polynomial

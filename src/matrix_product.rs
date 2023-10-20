@@ -62,7 +62,6 @@ pub fn matrix_product(mat1: &Matrix, mat2: &Matrix) -> Result<Matrix, &'static s
 pub fn gram_schmidt(basis: &mut Vec<Matrix>) -> Vec<Matrix> {
     let mut orth_basis: Vec<Matrix> = vec![basis[0].clone()];
 
-    println!("BASIS LEN: {}", basis.len());
     for i in 1..basis.len() {
         let mut new_basis_vector = basis[i].clone();
         let basis_vector = basis[i].clone();
