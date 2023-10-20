@@ -1,6 +1,6 @@
-use std::backtrace;
+use std::sync::{Arc, Mutex, mpsc};
 
-use crate::matrix::Matrix;
+use crate::{matrix::Matrix, thread_pool};
 
 pub fn dot_product(vec1: &Vec<f64>, vec2: &Vec<f64>) -> Result<f64, &'static str> {
     if vec1.len() != vec2.len() {
@@ -32,7 +32,11 @@ pub fn matrix_product(mat1: &Matrix, mat2: &Matrix) -> Result<Matrix, &'static s
     let mut mat: Vec<f64> = vec![0.0; mat1.rows * mat2.cols];
 
     for i in 0..mat1.rows {
+        
+
         for j in 0..mat2.cols {
+
+            
             let mut row: Vec<f64> = vec![];
 
             let mut col: Vec<f64> = vec![];
@@ -59,6 +63,7 @@ pub fn matrix_product(mat1: &Matrix, mat2: &Matrix) -> Result<Matrix, &'static s
     })
 }
 
+
 pub fn gram_schmidt(basis: &mut Vec<Matrix>) -> Vec<Matrix> {
     let mut orth_basis: Vec<Matrix> = vec![basis[0].clone()];
 
@@ -74,4 +79,33 @@ pub fn gram_schmidt(basis: &mut Vec<Matrix>) -> Vec<Matrix> {
     }
 
     orth_basis
+}
+
+
+// CONCURRENT CODE HERE
+
+pub fn async_mat_prod(mat1: &Matrix, mat2: &Matrix, transmitter:Arc<Mutex<mpsc::Sender<Matrix>>>)
+{
+    // We should create a thread for each dot product the matrix
+    // product uses. So one thread for each mat1 row
+
+    let thread_pool = thread_pool::ThreadPool::new(1).unwrap();
+
+    let mat1 = Arc::new(Mutex::new(mat1.clone()));
+    let mat2 = Arc::new(Mutex::new(mat2.clone()));
+
+    thread_pool.execute(move || {
+        let product = matrix_product(&*mat1.lock().unwrap(), &*mat2.lock().unwrap());
+
+        match product {
+            Ok(product) => {
+                let transmitter = Arc::clone(&transmitter);
+                transmitter.lock().unwrap().send(product).unwrap();
+            },
+            Err(msg) => eprintln!("{}", msg)
+        }
+
+    });
+
+
 }

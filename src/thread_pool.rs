@@ -36,12 +36,13 @@ impl ThreadPool {
             let handle = thread::spawn(move || {
                 let job:Result<Job, std::sync::mpsc::RecvError> = rx.lock().unwrap().recv();
 
-                if let Ok(job) = job
-                {
-                    job();
-                }
-                else {
-                    eprintln!("Handle hung up");
+                match job {
+                    Ok(job) => {
+                        job();
+                    },
+                    Err(msg) => {
+                        eprint!("Handle hung up | ERR {}", msg);
+                    }
                 }
 
             });
