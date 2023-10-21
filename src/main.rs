@@ -1,6 +1,6 @@
-use std::{thread, time::Duration, arch::x86_64::_mm256_add_ps, sync::{mpsc, Arc, Mutex}};
+use std::{thread, time::{Duration, Instant}, arch::x86_64::_mm256_add_ps, sync::{mpsc, Arc, Mutex}};
 
-use linalg::{matrix::Matrix, lineal_eq::solve_system, thread_pool::ThreadPool, matrix_product::async_mat_prod};
+use linalg::{matrix::Matrix, lineal_eq::solve_system, thread_pool::ThreadPool, matrix_product::{async_mat_prod, self}};
 /*
     REGLAS PARA EL DESARROLLO DE LA LIBRERIA
 
@@ -12,21 +12,8 @@ use linalg::{matrix::Matrix, lineal_eq::solve_system, thread_pool::ThreadPool, m
 */
 
 fn main() {
-   
-    let mat1 = Matrix::from("./matrix.csv").unwrap();
-    let mat2 = mat1.clone();
-    let (tx, rx) = mpsc::channel();
     
-    async_mat_prod(&mat1, &mat2, Arc::new(Mutex::new(tx)));
 
-
-    thread::sleep(Duration::from_secs(1));
-
-    if let Ok(matrix) = rx.try_recv()
-    {
-        println!("{}", matrix);
-    }
-    
     /*
         TODO:
 

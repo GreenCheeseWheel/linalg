@@ -15,6 +15,17 @@ pub struct Matrix {
     pub data: Vec<f64>,
 }
 
+pub trait MatrixType {
+    fn new(rows:usize, cols:usize);
+
+    fn from(file_path:&str);
+
+    fn from_iterator<T>(rows:usize, cols:usize, iter:T) where T:IntoIterator;
+
+    fn identity(order:usize);
+
+}
+
 impl Matrix {
     ///////
     // ALL INSTANTIATION METHODS

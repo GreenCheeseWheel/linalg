@@ -1,6 +1,6 @@
-use std::sync::{Arc, Mutex, mpsc};
+use std::{sync::{Arc, Mutex, mpsc}, thread};
 
-use crate::{matrix::Matrix, thread_pool};
+use crate::{matrix::Matrix};
 
 pub fn dot_product(vec1: &Vec<f64>, vec2: &Vec<f64>) -> Result<f64, &'static str> {
     if vec1.len() != vec2.len() {
@@ -20,7 +20,7 @@ pub fn projection(vec1: &Vec<f64>, vec2: &Vec<f64>) -> Matrix {
     let mut proj = dot_product(vec2, vec1).unwrap();
     proj /= dot_product(vec1, vec1).unwrap();
 
-    let mut matrix = Matrix::from_iterator(vec1.len(), 1, vec1.clone());
+    let matrix = Matrix::from_iterator(vec1.len(), 1, vec1.clone());
     proj * &matrix
 }
 
@@ -89,23 +89,21 @@ pub fn async_mat_prod(mat1: &Matrix, mat2: &Matrix, transmitter:Arc<Mutex<mpsc::
     // We should create a thread for each dot product the matrix
     // product uses. So one thread for each mat1 row
 
-    let thread_pool = thread_pool::ThreadPool::new(1).unwrap();
-
     let mat1 = Arc::new(Mutex::new(mat1.clone()));
     let mat2 = Arc::new(Mutex::new(mat2.clone()));
-
-    thread_pool.execute(move || {
+    
+    
+    thread::spawn(move || {
+        let transmitter = transmitter;
         let product = matrix_product(&*mat1.lock().unwrap(), &*mat2.lock().unwrap());
-
+    
         match product {
             Ok(product) => {
-                let transmitter = Arc::clone(&transmitter);
+                
                 transmitter.lock().unwrap().send(product).unwrap();
             },
             Err(msg) => eprintln!("{}", msg)
         }
-
     });
-
 
 }
